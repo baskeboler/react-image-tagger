@@ -26,6 +26,7 @@ class LeafletComponent extends React.Component {
 
     map.on('draw:created', e => {
       console.log(e);
+      drawnItems.addLayer(e.layer);
     });
   }
 
