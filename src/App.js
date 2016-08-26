@@ -1,16 +1,34 @@
 import React from 'react';
-import LeafletComponent from './Leaflet';
-import './App.css';
+import LeafletComponentContainer from './containers/LeafletComponentContainer';
+import RegionListContainer from './containers/RegionListContainer';
+// import './App.css';
+import {createStore} from 'redux';
+import {Provider} from 'react-redux';
+import imageTaggerApp from './reducers';
+import {setImage} from './actions';
+let store = createStore(imageTaggerApp);
+
+store.dispatch(setImage('http://www.planwallpaper.com/static/images/i-should-buy-a-boat.jpg'));
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     return (
-      <div className="App">
-        <LeafletComponent id="map"></LeafletComponent>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+      <Provider store={store}>
+        <div className="App">
+          <LeafletComponentContainer
+            id="map">
+
+          </LeafletComponentContainer>
+          <RegionListContainer />
+          <p className="App-intro">
+            To get started, edit <code>src/App.js</code> and save to reload.
+          </p>
+        </div>
+      </Provider>
     );
   }
 }
