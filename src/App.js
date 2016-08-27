@@ -1,6 +1,7 @@
 import React from 'react';
 import LeafletComponentContainer from './containers/LeafletComponentContainer';
 import RegionListContainer from './containers/RegionListContainer';
+import ImageFormContainer from './containers/ImageFormContainer';
 // import './App.css';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
@@ -24,6 +25,7 @@ class App extends React.Component {
 
           </LeafletComponentContainer>
           <RegionListContainer />
+          <ImageFormContainer />
           <p className="App-intro">
             To get started, edit <code>src/App.js</code> and save to reload.
           </p>

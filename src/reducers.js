@@ -6,6 +6,9 @@ function selections(state = [], action) {
     case UPDATE_SELECTIONS:
       return [...action.selections];
       break;
+    case SET_IMAGE:
+      return []
+      break;
     default:
       return state;
   }

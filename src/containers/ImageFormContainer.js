@@ -1,0 +1,18 @@
+import ImageForm from '../ImageForm';
+import {connect} from 'react-redux';
+import {setImage} from '../actions';
+
+const mapStateToProps = (state) => {
+  return {};
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onFormSubmit: (url) => {
+      dispatch(setImage(url));
+    }
+  }
+}
+
+const ImageFormContainer = connect(mapStateToProps, mapDispatchToProps)(ImageForm);
+export default ImageFormContainer;

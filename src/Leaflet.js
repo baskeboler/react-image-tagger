@@ -14,14 +14,18 @@ class LeafletComponent extends React.Component {
     };
     this.getRects = this.getRects.bind(this);
     this.updateState=this.updateState.bind(this);
+    this.reloadMap=this.reloadMap.bind(this);
+    this.setupMapWidget=this.setupMapWidget.bind(this);
   }
 
   getRects(){
     return this.drawnItems.getLayers()
       .map(i => i.getBounds().toBBoxString());
   }
-
   componentDidMount() {
+    this.setupMapWidget(this.props.imgSrc);
+  }
+  setupMapWidget(imgSrc) {
     var self = this;
     var map = this.map = L.map(this.props.id, {
       crs: L.CRS.Simple,
@@ -66,14 +70,19 @@ class LeafletComponent extends React.Component {
       this.updateState();
     });
 
-    this.loadImage();
+    this.loadImage(imgSrc);
   }
   updateState() {
     // this.setState({selectedRegions: this.getRects()});
     //this.props.onChange();
     this.props.onSelectionsUpdate(this.getRects());
   }
-  loadImage() {
+  reloadMap(imgSrc) {
+    this.map.remove();
+    this.setupMapWidget(imgSrc);
+
+  }
+  loadImage(imgSrc) {
     var self = this;
     var tmpImage = this.tmpImage=  new Image();
     tmpImage.onload = function () {
@@ -84,7 +93,7 @@ class LeafletComponent extends React.Component {
       self.map.fitBounds(bounds);
       console.log(`Image loaded.`);
     };
-    tmpImage.src = this.props.imgSrc;
+    tmpImage.src = imgSrc;
 
   }
 
@@ -93,6 +102,15 @@ class LeafletComponent extends React.Component {
       <div id={this.props.id} style={{height: this.props.height, width: this.props.width}}>
       </div>
     )
+  }
+
+  componentWillReceiveProps(newProps) {
+    console.log('new props!');
+    console.log(newProps);
+    if (this.props.imgSrc != newProps.imgSrc) {
+      console.log('reloading map!');
+      this.reloadMap(newProps.imgSrc);
+    }
   }
 }
 
