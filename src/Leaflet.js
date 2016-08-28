@@ -16,8 +16,8 @@ class LeafletComponent extends React.Component {
 
   getRects(){
     return this.drawnItems.getLayers()
-      .map(i => {return {id: this.drawnItems.getLayerId(i), layer: i}})
-      .map(gj => {return `layer ${gj.id}: ${gj.layer.getBounds().toBBoxString()}`});//getBounds().toBBoxString());
+      .map(i => {return {id: this.drawnItems.getLayerId(i), layer: i}});
+      //.map(gj => {return `layer ${gj.id}: ${gj.layer.getBounds().toBBoxString()}`});//getBounds().toBBoxString());
   }
   componentDidMount() {
     this.setupMapWidget(this.props.imgSrc);

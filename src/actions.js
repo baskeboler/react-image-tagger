@@ -6,7 +6,15 @@ export const SET_IMAGE_SIZE='SET_IMAGE_SIZE';
 export const SAVE_TAGS='SAVE_TAGS';
 export const LOAD_TAGS='LOAD_TAGS';
 export const SELECT_TAG='SELECT_TAG';
-export const CLEAR_SELECTED_TAG='CLEAR_SELECTED_TAG'
+export const CLEAR_SELECTED_TAG='CLEAR_SELECTED_TAG';
+export const SAVE_TAG_DATA='SAVE_TAG_DATA';
+
+export function saveTagData(tag) {
+  return {
+    type: SAVE_TAG_DATA,
+    tag: tag
+  };
+}
 export function selectTag(tagId) {
   console.log(`tag selected: ${tagId}`);
   return {

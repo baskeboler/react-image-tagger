@@ -12,7 +12,7 @@ class RegionList extends React.Component {
           {regions.map((r, i) => {
             return (
               <li key={i}>
-                  {r}
+                  {r.id} - {r.layer.getBounds().toBBoxString()}
               </li>
             );
           })}

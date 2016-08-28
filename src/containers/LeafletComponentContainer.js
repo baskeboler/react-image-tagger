@@ -1,5 +1,5 @@
 import LeafletComponent from '../Leaflet';
-import { updateSelections, setImageSize, selectTag, clearSelectedTag } from '../actions';
+import { saveTagData, updateSelections, setImageSize, selectTag, clearSelectedTag } from '../actions';
 import { connect } from 'react-redux'
 const mapStateToProps = (state) => {
   return {
@@ -27,6 +27,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     onClearSelectedTag: () => {
       dispatch(clearSelectedTag());
+    },
+    onSaveTagData: (tag) => {
+      dispatch(saveTagData(tag));
     }
   }
 };

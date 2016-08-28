@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - src/Leaflet.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>src/Leaflet.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">72.12</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">155</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">36.27</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">1.64</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">import React from &#039;react&#039;;
+import &#039;leaflet/dist/leaflet.css&#039;;
+import L from &#039;leaflet&#039;;
+import &#039;leaflet-draw/dist/leaflet.draw.css&#039;;
+import &#039;leaflet-draw&#039;;
+import sampleImage from &#039;./assets/image.jpg&#039;;
+
+class LeafletComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.getRects = this.getRects.bind(this);
+    this.updateState=this.updateState.bind(this);
+    this.reloadMap=this.reloadMap.bind(this);
+    this.setupMapWidget=this.setupMapWidget.bind(this);
+  }
+
+  getRects(){
+    return this.drawnItems.getLayers()
+      .map(i =&gt; {return {id: this.drawnItems.getLayerId(i), layer: i}})
+      .map(gj =&gt; {return `layer ${gj.id}: ${gj.layer.getBounds().toBBoxString()}`});//getBounds().toBBoxString());
+  }
+  componentDidMount() {
+    this.setupMapWidget(this.props.imgSrc);
+  }
+  setupMapWidget(imgSrc) {
+    var self = this;
+    var map = this.map = L.map(this.props.id, {
+      crs: L.CRS.Simple,
+      minZoom: -5
+    });
+    // var bounds = this.bounds = [[0,0], [1000, 1000]];
+    // var image = this.image = L.imageOverlay(sampleImage, bounds).addTo(map);
+    var drawnItems = this.drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    var drawControl = this.drawControl = new L.Control.Draw({
+      edit: {
+        featureGroup: drawnItems
+      },
+      draw: {
+        polyline: false,
+        polygon: false,
+        marker: false,
+        circle: false
+      }
+    });
+    map.addControl(drawControl);
+    // map.fitBounds(bounds);
+    //.setView([51.505, -0.09], 13);
+    console.log(&#039;Component mounted!&#039;);
+
+    map.on(&#039;draw:created&#039;, e =&gt; {
+      console.log(e);
+      e.layer.on(&#039;click&#039;, e2 =&gt; {
+        console.log(&#039;rect clicked!&#039;, e2);
+        this.props.onTagSelected(e.layer._leaflet_id);
+        // e2.target.setStyle({fillOpacity: .5});
+      });
+      map.on(&#039;imageTagger:tagSelectionChanged&#039;, e2 =&gt; {
+        // this.props.onTagSelected(e2.target._leaflet_id);
+        if (e2.selectedTag.selected &amp;&amp; e2.selectedTag.id==e.layer._leaflet_id){
+          console.log(&#039;tg selection changed!&#039;, e2);
+
+          e.layer.setStyle({fillOpacity: .5});
+        } else {
+          e.layer.setStyle({fillOpacity: .2});
+
+        }
+      });
+      drawnItems.addLayer(e.layer);
+      this.updateState();
+    });
+
+    map.on(&#039;draw:edited&#039;, e =&gt; {
+      console.log(`Editing completed. updating state.`);
+      this.updateState();
+      // self.setState({selectedRegions: self.getRects()});
+
+    });
+    map.on(&#039;draw:deleted&#039;, e =&gt; {
+      console.log(`Selection deleted. updating state.`);
+      // self.setState({selectedRegions: self.getRects()});
+      this.updateState();
+    });
+    map.on(&#039;click&#039;, e =&gt; {
+      console.log(&#039;clear selection&#039;);
+      this.props.onClearSelectedTag();
+    });
+
+    this.loadImage(imgSrc);
+  }
+  updateState() {
+    // this.setState({selectedRegions: this.getRects()});
+    //this.props.onChange();
+    this.props.onSelectionsUpdate(this.getRects());
+  }
+  reloadMap(imgSrc) {
+    this.map.remove();
+    delete this.bounds;
+    delete this.image;
+    delete this.tmpImage;
+    delete this.drawnItems;
+    this.setupMapWidget(imgSrc);
+
+  }
+  loadImage(imgSrc) {
+    var self = this;
+    var tmpImage = this.tmpImage=  new Image();
+    tmpImage.onload = function () {
+      console.log(`image dimensions is ${this.width} + ${this.height}`);
+      //bounds =
+      self.props.onSetImageSize({w: this.width, h: this.height});
+      var bounds = self.bounds = [[0,0], [this.height, this.width]];
+      var image = self.image = L.imageOverlay(this.src, bounds).addTo(self.map);
+      self.map.fitBounds(bounds);
+      console.log(`Image loaded.`);
+    };
+    tmpImage.src = imgSrc;
+
+  }
+
+  render(){
+    return (
+      &lt;div id={this.props.id} style={{height: this.props.height, width: this.props.width}}&gt;
+      &lt;/div&gt;
+    )
+  }
+
+  componentWillReceiveProps(newProps) {
+    console.log(&#039;new props!&#039;);
+    console.log(&#039;current props&#039;, this.props);
+    console.log(&#039;new props&#039; , newProps);
+    if (this.props.imgSrc != newProps.imgSrc) {
+      console.log(&#039;reloading map!&#039;);
+      this.reloadMap(newProps.imgSrc);
+    }
+    if (newProps.selectedTag.id != this.props.selectedTag.id) {
+        this.map.fireEvent(&#039;imageTagger:tagSelectionChanged&#039;, {selectedTag: newProps.selectedTag});
+      }
+  }
+}
+
+LeafletComponent.propTypes = {
+  id: React.PropTypes.string.isRequired,
+  height: React.PropTypes.string,
+  width: React.PropTypes.string,
+  imgSrc: React.PropTypes.string,
+  onSelectionsUpdate: React.PropTypes.func
+};
+LeafletComponent.defaultProps = {
+  height: &#039;300px&#039;,
+  width: &#039;100%&#039;,
+  imgSrc: sampleImage
+};
+export default LeafletComponent;</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ cyclomatic }} <br>
+    Length : {{ halstead.length }} <br>
+    Difficulty : {{ halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
