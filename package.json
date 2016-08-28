@@ -6,9 +6,11 @@
     "react-scripts": "0.2.3"
   },
   "dependencies": {
+    "elemental": "^0.6.1",
     "leaflet": "^0.7.7",
     "leaflet-draw": "^0.3.2",
     "react": "^15.3.1",
+    "react-addons-css-transition-group": "^15.3.1",
     "react-dom": "^15.3.1",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",

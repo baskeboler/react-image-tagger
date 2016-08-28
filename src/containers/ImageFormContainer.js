@@ -3,7 +3,10 @@ import {connect} from 'react-redux';
 import {setImage} from '../actions';
 
 const mapStateToProps = (state) => {
-  return {};
+  return {
+    imgSrc: state.image.src,
+    size: state.image.size
+  };
 }
 
 const mapDispatchToProps = (dispatch) => {

@@ -1,17 +1,13 @@
 import React from 'react';
 import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
 import L from 'leaflet';
+import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import sampleImage from './assets/image.jpg';
 
 class LeafletComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      imageSize: {},
-      selectedRegions: []
-    };
     this.getRects = this.getRects.bind(this);
     this.updateState=this.updateState.bind(this);
     this.reloadMap=this.reloadMap.bind(this);
@@ -20,7 +16,8 @@ class LeafletComponent extends React.Component {
 
   getRects(){
     return this.drawnItems.getLayers()
-      .map(i => i.getBounds().toBBoxString());
+      .map(i => {return {id: this.drawnItems.getLayerId(i), layer: i}})
+      .map(gj => {return `layer ${gj.id}: ${gj.layer.getBounds().toBBoxString()}`});//getBounds().toBBoxString());
   }
   componentDidMount() {
     this.setupMapWidget(this.props.imgSrc);
@@ -43,8 +40,8 @@ class LeafletComponent extends React.Component {
       draw: {
         polyline: false,
         polygon: false,
-        circle: false,
-        marker: false
+        marker: false,
+        circle: false
       }
     });
     map.addControl(drawControl);
@@ -54,6 +51,22 @@ class LeafletComponent extends React.Component {
 
     map.on('draw:created', e => {
       console.log(e);
+      e.layer.on('click', e2 => {
+        console.log('rect clicked!', e2);
+        this.props.onTagSelected(e.layer._leaflet_id);
+        // e2.target.setStyle({fillOpacity: .5});
+      });
+      map.on('imageTagger:tagSelectionChanged', e2 => {
+        // this.props.onTagSelected(e2.target._leaflet_id);
+        if (e2.selectedTag.selected && e2.selectedTag.id==e.layer._leaflet_id){
+          console.log('tg selection changed!', e2);
+
+          e.layer.setStyle({fillOpacity: .5});
+        } else {
+          e.layer.setStyle({fillOpacity: .2});
+
+        }
+      });
       drawnItems.addLayer(e.layer);
       this.updateState();
     });
@@ -79,6 +92,10 @@ class LeafletComponent extends React.Component {
   }
   reloadMap(imgSrc) {
     this.map.remove();
+    delete this.bounds;
+    delete this.image;
+    delete this.tmpImage;
+    delete this.drawnItems;
     this.setupMapWidget(imgSrc);
 
   }
@@ -88,6 +105,7 @@ class LeafletComponent extends React.Component {
     tmpImage.onload = function () {
       console.log(`image dimensions is ${this.width} + ${this.height}`);
       //bounds =
+      self.props.onSetImageSize({w: this.width, h: this.height});
       var bounds = self.bounds = [[0,0], [this.height, this.width]];
       var image = self.image = L.imageOverlay(this.src, bounds).addTo(self.map);
       self.map.fitBounds(bounds);
@@ -106,11 +124,16 @@ class LeafletComponent extends React.Component {
 
   componentWillReceiveProps(newProps) {
     console.log('new props!');
-    console.log(newProps);
+    console.log('current props', this.props);
+    console.log('new props' , newProps);
     if (this.props.imgSrc != newProps.imgSrc) {
       console.log('reloading map!');
       this.reloadMap(newProps.imgSrc);
     }
+    if (newProps.selectedTag.selected
+      && newProps.selectedTag.id != this.props.selectedTag.id) {
+        this.map.fireEvent('imageTagger:tagSelectionChanged', {selectedTag: newProps.selectedTag});
+      }
   }
 }
 

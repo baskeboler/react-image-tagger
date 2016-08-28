@@ -1,4 +1,5 @@
 import React from 'react';
+import {Form, Button, FormField, FormInput, Glyph, InputGroup, Card} from 'elemental';
 
 class ImageForm extends React.Component {
   constructor(props) {
@@ -6,16 +7,32 @@ class ImageForm extends React.Component {
     this.handleClick=this.handleClick.bind(this);
   }
   handleClick() {
-    var url = this.textField.value;
+    var url = this.textField.refs.input.value;
     this.props.onFormSubmit(url);
   }
   render() {
     return (
-      <form className="imageForm">
-        <label>Image URL</label>
-        <input type="text" ref={(ref) => this.textField = ref} ></input>
-        <button type="button" onClick={this.handleClick}>Load Image</button>
-      </form>
+      <Form >
+        <Card>
+          <p><strong>Dimensions: </strong>{this.props.size.w} x {this.props.size.h}</p>
+          <p>(current image {this.props.imgSrc})</p>
+
+        </Card>
+        <Card>
+          <FormField label="Image URL ">
+            <InputGroup contiguous>
+              <InputGroup.Section grow>
+                <FormInput autofocus placeholder="Enter a URL pointing to an image file." type="text" ref={(ref) => this.textField = ref} ></FormInput>
+              </InputGroup.Section>
+              <InputGroup.Section>
+                <Button type="primary" onClick={this.handleClick}>
+                  <Glyph icon="sync"/>
+                </Button>
+              </InputGroup.Section>
+            </InputGroup>
+          </FormField>
+        </Card>
+      </Form>
     )
   }
 }
