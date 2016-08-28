@@ -8,6 +8,8 @@ import {Provider} from 'react-redux';
 import imageTaggerApp from './reducers';
 import {setImage} from './actions';
 import {Card, Row, Col, Container} from 'elemental'
+import SelectedTagInfo from './TagInfo';
+
 let store = createStore(imageTaggerApp);
 
 store.dispatch(setImage('http://www.planwallpaper.com/static/images/i-should-buy-a-boat.jpg'));
@@ -26,6 +28,7 @@ class App extends React.Component {
           </h1>
           <Row>
             <Col sm="1/3">
+              <SelectedTagInfo />
               <ImageFormContainer />
               <RegionListContainer />
             </Col>

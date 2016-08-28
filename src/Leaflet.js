@@ -82,6 +82,10 @@ class LeafletComponent extends React.Component {
       // self.setState({selectedRegions: self.getRects()});
       this.updateState();
     });
+    map.on('click', e => {
+      console.log('clear selection');
+      this.props.onClearSelectedTag();
+    });
 
     this.loadImage(imgSrc);
   }
@@ -130,8 +134,7 @@ class LeafletComponent extends React.Component {
       console.log('reloading map!');
       this.reloadMap(newProps.imgSrc);
     }
-    if (newProps.selectedTag.selected
-      && newProps.selectedTag.id != this.props.selectedTag.id) {
+    if (newProps.selectedTag.id != this.props.selectedTag.id) {
         this.map.fireEvent('imageTagger:tagSelectionChanged', {selectedTag: newProps.selectedTag});
       }
   }
